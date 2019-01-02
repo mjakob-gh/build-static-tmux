@@ -2,21 +2,21 @@
 # Exit on error #
 #set -e
 
-export CC=gcc-5
+export CC=gcc-6
 export REALCC=${CC}
 export CPPFLAGS="-P"
 
-# set this variable to 'TRUE'
-# to compress the resulting
-# with UPX
+# set this variable to 'TRUE' to compress the resulting
+# executable with UPX
 export USE_UPX="TRUE"
 
-TMUX_STATIC_HOME="${HOME}/tmux-static"
+#TMUX_STATIC_HOME="${HOME}/tmux-static"
+TMUX_STATIC_HOME="/tmp/tmux-static"
 
-TMUX_VERSION=2.6
+TMUX_VERSION=2.8
 TMUX_URL="https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}"
 
-MUSL_VERSION=1.1.18
+MUSL_VERSION=1.1.20
 MUSL_URL="https://www.musl-libc.org/releases"
 
 NCURSES_VERSION=6.1
@@ -25,7 +25,7 @@ NCURSES_URL="http://ftp.gnu.org/gnu/ncurses"
 LIBEVENT_VERSION=2.1.8
 LIBEVENT_URL="https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable"
 
-UPX_VERSION=3.94
+UPX_VERSION=3.95
 UPX_URL="https://github.com/upx/upx/releases/download/v${UPX_VERSION}"
 
 START_TIME=$(date '+%d.%m.%Y %H:%M:%S')
@@ -45,6 +45,7 @@ fi
 clear
 
 # create directories
+[ ! -d ${TMUX_STATIC_HOME} ]         && mkdir ${TMUX_STATIC_HOME}
 [ ! -d ${TMUX_STATIC_HOME}/src ]     && mkdir ${TMUX_STATIC_HOME}/src
 [ ! -d ${TMUX_STATIC_HOME}/lib ]     && mkdir ${TMUX_STATIC_HOME}/lib
 [ ! -d ${TMUX_STATIC_HOME}/bin ]     && mkdir ${TMUX_STATIC_HOME}/bin
@@ -52,20 +53,21 @@ clear
 [ ! -d ${TMUX_STATIC_HOME}/include ] && mkdir ${TMUX_STATIC_HOME}/include
 
 # Clean up #
-rm -rf ${TMUX_STATIC_HOME}/bin/*
-rm -rf ${TMUX_STATIC_HOME}/lib/*
-rm -rf ${TMUX_STATIC_HOME}/log/*
 rm -rf ${TMUX_STATIC_HOME}/include/*
+rm -rf ${TMUX_STATIC_HOME}/lib/*
+rm -rf ${TMUX_STATIC_HOME}/bin/*
+rm -rf ${TMUX_STATIC_HOME}/log/*
 
+rm -rf ${TMUX_STATIC_HOME}/src/upx-${UPX_VERSION}-amd64_linux
 rm -rf ${TMUX_STATIC_HOME}/src/musl-${MUSL_VERSION}
 rm -rf ${TMUX_STATIC_HOME}/src/libevent-${LIBEVENT_VERSION}-stable
 rm -rf ${TMUX_STATIC_HOME}/src/ncurses-${NCURSES_VERSION}
 rm -rf ${TMUX_STATIC_HOME}/src/tmux-${TMUX_VERSION}
-rm -rf ${TMUX_STATIC_HOME}/src/upx-${UPX_VERSION}-amd64_linux
 
 echo "*************************************"
 echo "** Starting to build a static TMUX **"
 echo "*************************************"
+
 echo ""
 echo "HINT:"
 echo "In case you are behind a proxy, you can define the http_proxy"
@@ -91,7 +93,7 @@ checkResult $?
 cd musl-${MUSL_VERSION}
 
 echo -n "Configuring..."
-./configure --disable-shared --prefix=${TMUX_STATIC_HOME} --bindir=${TMUX_STATIC_HOME}/bin --includedir=${TMUX_STATIC_HOME}/include --libdir=${TMUX_STATIC_HOME}/lib > ${TMUX_STATIC_HOME}/log/musl-${MUSL_VERSION}.log 2>&1
+./configure --enable-gcc-wrapper --disable-shared --prefix=${TMUX_STATIC_HOME} --bindir=${TMUX_STATIC_HOME}/bin --includedir=${TMUX_STATIC_HOME}/include --libdir=${TMUX_STATIC_HOME}/lib > ${TMUX_STATIC_HOME}/log/musl-${MUSL_VERSION}.log 2>&1
 checkResult $?
 
 echo -n "Compiling....."
@@ -200,32 +202,32 @@ strip ${TMUX_STATIC_HOME}/bin/tmux.stripped
 checkResult $?
 
 # compress with upx, when choosen
-if [ ! -z ${USE_UPX} ] && [ "${USE_UPX}" = "TRUE" ]; then
+if [ ! -z ${USE_UPX} ] && [ ${USE_UPX} == "TRUE" ]; then
+    echo ""
+    echo "Compressing binary with UPX ${UPX_VERSION}"
+    echo "--------------------------------"
     cd ${TMUX_STATIC_HOME}/src
-
-    # check if upx is already installed/in path
-    # if not, download and extract it
-    if [ -x "$(command -v upx)" ]; then
-        UPX_COMMAND=upx
-    else
-        if [ ! -f upx-${UPX_VERSION}-amd64_linux.tar.xz ]; then
-            echo -n "Downloading..."
-            wget -q ${UPX_URL}/upx-${UPX_VERSION}-amd64_linux.tar.xz
-            checkResult $?
-        fi
-
-        if [ -f upx-${UPX_VERSION}-amd64_linux.tar.xz ]; then
-            tar xJf upx-${UPX_VERSION}-amd64_linux.tar.xz
-            mv upx-${UPX_VERSION}-amd64_linux/upx ${TMUX_STATIC_HOME}/bin/
-            UPX_COMMAND=${TMUX_STATIC_HOME}/bin/upx
-        fi
+    if [ ! -f upx-${UPX_VERSION}-amd64_linux.tar.xz ]; then
+        echo -n "Downloading..."
+        wget -q ${UPX_URL}/upx-${UPX_VERSION}-amd64_linux.tar.xz
+        checkResult $?
     fi
+    tar xJf upx-${UPX_VERSION}-amd64_linux.tar.xz
+    cd upx-${UPX_VERSION}-amd64_linux
+    mv upx ${TMUX_STATIC_HOME}/bin/
 
     # compress binary with upx
     cp ${TMUX_STATIC_HOME}/bin/tmux.stripped ${TMUX_STATIC_HOME}/bin/tmux.upx
     echo -n "Compressing..."
-    ${UPX_COMMAND} -q --best --ultra-brute ${TMUX_STATIC_HOME}/bin/tmux.upx > ${TMUX_STATIC_HOME}/log/upx-${UPX_VERSION}.log 2>&1
+    ${TMUX_STATIC_HOME}/bin/upx -q --best --ultra-brute ${TMUX_STATIC_HOME}/bin/tmux.upx > /dev/null 2>&1
     checkResult $?
+fi
+
+echo ""
+echo "Standard tmux binary:   ${TMUX_STATIC_HOME}/bin/tmux"
+echo "Stripped tmux binary:   ${TMUX_STATIC_HOME}/bin/tmux.stripped"
+if [ ! -z ${USE_UPX} ] && [ ${USE_UPX} == "TRUE" ]; then
+    echo "Compressed tmux binary: ${TMUX_STATIC_HOME}/bin/tmux.upx"
 fi
 
 echo ""
