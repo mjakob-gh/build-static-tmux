@@ -10,13 +10,20 @@ export CPPFLAGS="-P"
 # executable with UPX
 export USE_UPX="TRUE"
 
+# ANSI Farb Codes
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+YELLOW="\033[0;33m"
+BLUE="\033[0;34m"
+COLOR_END="\033[0m"
+
 #TMUX_STATIC_HOME="${HOME}/tmux-static"
 TMUX_STATIC_HOME="/tmp/tmux-static"
 
 TMUX_VERSION=2.8
 TMUX_URL="https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}"
 
-MUSL_VERSION=1.1.20
+MUSL_VERSION=1.1.21
 MUSL_URL="https://www.musl-libc.org/releases"
 
 NCURSES_VERSION=6.1
@@ -33,9 +40,9 @@ START_TIME=$(date '+%d.%m.%Y %H:%M:%S')
 checkResult ()
 {
 if [ $1 -eq 0 ]; then
-    echo "OK"
+    echo -e "${GREEN}[OK]${COLOR_END}"
 else
-    echo "ERROR"
+    echo -e "${RED}[ERROR]${COLOR_END}"
     echo "Check Buildlog in ${TMUX_STATIC_HOME}/log/"
     echo ""
     exit 1
@@ -64,16 +71,16 @@ rm -rf ${TMUX_STATIC_HOME}/src/libevent-${LIBEVENT_VERSION}-stable
 rm -rf ${TMUX_STATIC_HOME}/src/ncurses-${NCURSES_VERSION}
 rm -rf ${TMUX_STATIC_HOME}/src/tmux-${TMUX_VERSION}
 
-echo "*************************************"
-echo "** Starting to build a static TMUX **"
-echo "*************************************"
+echo -e "${BLUE}*************************************${COLOR_END}"
+echo -e "${BLUE}** Starting to build a static TMUX **${COLOR_END}"
+echo -e "${BLUE}*************************************${COLOR_END}"
 
 echo ""
 echo "HINT:"
 echo "In case you are behind a proxy, you can define the http_proxy"
 echo "variables to download the necessary files like this:"
-echo 'export http_proxy="http://<username>:<password>@<Proxy_DNS_or_IP_address>:<Port>/"'
-echo 'export https_proxy="http://<username>:<password>@<Proxy_DNS_or_IP_address>:<Port>/"'
+echo -e "${YELLOW}export http_proxy=\"http://<username>:<password>@<Proxy_DNS_or_IP_address>:<Port>/\"${COLOR_END}"
+echo -e "${YELLOW}export https_proxy=\"http://<username>:<password>@<Proxy_DNS_or_IP_address>:<Port>/\"${COLOR_END}"
 
 echo ""
 echo "musl ${MUSL_VERSION}"
