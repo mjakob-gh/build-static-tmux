@@ -233,7 +233,7 @@ fi
 echo ""
 echo "Standard tmux binary:   ${TMUX_STATIC_HOME}/bin/tmux"
 echo "Stripped tmux binary:   ${TMUX_STATIC_HOME}/bin/tmux.stripped"
-if [ ! -z ${USE_UPX} ] && [ ${USE_UPX} -eq "TRUE" ]; then
+if [ ! -z ${USE_UPX} ] && [ ${USE_UPX} = "TRUE" ]; then
     echo "Compressed tmux binary: ${TMUX_STATIC_HOME}/bin/tmux.upx"
 fi
 
