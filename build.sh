@@ -20,7 +20,7 @@ COLOR_END="\033[0m"
 #TMUX_STATIC_HOME="${HOME}/tmux-static"
 TMUX_STATIC_HOME="/tmp/tmux-static"
 
-TMUX_VERSION=2.9a
+TMUX_VERSION=3.0a
 TMUX_URL="https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}"
 
 MUSL_VERSION=1.1.24
