@@ -8,7 +8,7 @@ export CPPFLAGS="-P"
 
 # set this variable to 'TRUE' to compress the resulting
 # executable with UPX
-#export USE_UPX="TRUE"
+export USE_UPX="TRUE"
 
 # ANSI Color Codes
 RED="\033[0;31m"
