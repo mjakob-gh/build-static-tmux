@@ -9,5 +9,4 @@ deploy:
     - /tmp/tmux-static/bin/tmux
     - /tmp/tmux-static/bin/tmux.stripped
   skip_cleanup: true
-  on:
-    tags: true
+  overwrite: true
