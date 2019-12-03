@@ -17,24 +17,33 @@ YELLOW="\033[0;33m"
 BLUE="\033[0;34m"
 COLOR_END="\033[0m"
 
+
+######################################
+###### BEGIN VERSION DEFINITION ######
+######################################
+TMUX_VERSION=3.0a
+MUSL_VERSION=1.1.24
+NCURSES_VERSION=6.1
+LIBEVENT_VERSION=2.1.11
+######################################
+####### END VERSION DEFINITION #######
+######################################
+
+
 #TMUX_STATIC_HOME="${HOME}/tmux-static"
 TMUX_STATIC_HOME="/tmp/tmux-static"
 
 LOG_DIR="${TMUX_STATIC_HOME}/log"
 
-TMUX_VERSION=3.0a
 TMUX_ARCHIVE="tmux-${TMUX_VERSION}.tar.gz"
 TMUX_URL="https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}"
 
-MUSL_VERSION=1.1.24
 MUSL_ARCHIVE="musl-${MUSL_VERSION}.tar.gz"
 MUSL_URL="https://www.musl-libc.org/releases"
 
-NCURSES_VERSION=6.1
 NCURSES_ARCHIVE="ncurses-${NCURSES_VERSION}.tar.gz"
 NCURSES_URL="http://ftp.gnu.org/gnu/ncurses"
 
-LIBEVENT_VERSION=2.1.11
 LIBEVENT_ARCHIVE="libevent-${LIBEVENT_VERSION}-stable.tar.gz"
 LIBEVENT_URL="https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable"
 
