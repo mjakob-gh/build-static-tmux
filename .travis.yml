@@ -1,2 +1,12 @@
 language: sh
 script: sh ./build.sh
+
+deploy:
+  provider: releases
+  api_key: "abcb5d53df3c48941b76d8b81606371b49782b33"
+  file:
+    - /tmp/tmux-static/bin/tmux
+	- /tmp/tmux-static/bin/tmux.stripped
+  skip_cleanup: true
+  on:
+    tags: true
