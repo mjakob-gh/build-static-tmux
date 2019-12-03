@@ -2,7 +2,7 @@
 # Exit on error #
 set -e
 
-export CC=gcc-7
+export CC=gcc-5
 export REALCC=${CC}
 export CPPFLAGS="-P"
 
