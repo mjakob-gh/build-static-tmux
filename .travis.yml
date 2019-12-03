@@ -1,2 +1,2 @@
 language: sh
-script: sh ./build.sh
+script: sh -x ./build.sh
