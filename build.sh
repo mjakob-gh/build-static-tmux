@@ -1,6 +1,6 @@
 #!/bin/sh
 # Exit on error #
-set -e
+#set -e
 
 export CC=gcc-5
 export REALCC=${CC}
@@ -21,10 +21,11 @@ COLOR_END="\033[0m"
 ######################################
 ###### BEGIN VERSION DEFINITION ######
 ######################################
-TMUX_VERSION=3.1-rc
-MUSL_VERSION=1.1.24
+TMUX_VERSION=3.1
+MUSL_VERSION=1.2.0
 NCURSES_VERSION=6.1
 LIBEVENT_VERSION=2.1.11
+UPX_VERSION=3.95
 ######################################
 ####### END VERSION DEFINITION #######
 ######################################
@@ -47,7 +48,6 @@ NCURSES_URL="http://ftp.gnu.org/gnu/ncurses"
 LIBEVENT_ARCHIVE="libevent-${LIBEVENT_VERSION}-stable.tar.gz"
 LIBEVENT_URL="https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable"
 
-UPX_VERSION=3.95
 UPX_ARCHIVE="upx-${UPX_VERSION}-amd64_linux.tar.xz"
 UPX_URL="https://github.com/upx/upx/releases/download/v${UPX_VERSION}"
 
