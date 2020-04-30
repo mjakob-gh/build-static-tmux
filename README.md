@@ -3,8 +3,8 @@
 A script or building a static tmux for linux which should run on a wide selection of distributions (tested on Ubuntu, SLES12)
 
 **Versions**
-* [tmux 3.0a](https://github.com/tmux/tmux/)
-* [musl 1.1.24](https://www.musl-libc.org/)
+* [tmux 3.1](https://github.com/tmux/tmux/)
+* [musl 1.2.0](https://www.musl-libc.org/)
 * [ncurses 6.1](https://www.gnu.org/software/ncurses/)
 * [libevent 2.1.11](https://github.com/libevent/libevent/)
 
