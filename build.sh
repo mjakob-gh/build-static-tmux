@@ -1,8 +1,6 @@
 #!/bin/sh
-# Exit on error #
-#set -e
 
-export CC=gcc-5
+export CC=gcc
 export REALCC=${CC}
 export CPPFLAGS="-P"
 
@@ -29,7 +27,6 @@ UPX_VERSION=3.95
 ######################################
 ####### END VERSION DEFINITION #######
 ######################################
-
 
 #TMUX_STATIC_HOME="${HOME}/tmux-static"
 TMUX_STATIC_HOME="/tmp/tmux-static"
