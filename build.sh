@@ -15,7 +15,7 @@ COLOR_END="\033[0m"
 PGM="${0##*/}" # Program basename
 
 # Scriptversion
-VERSION="1.2"
+VERSION="3.1"
 
 ######################################
 ###### BEGIN VERSION DEFINITION ######
@@ -115,7 +115,7 @@ checkResult ()
         printf "${RED}[ERROR]${COLOR_END}\n"
         echo "Check Buildlog in ${LOG_DIR}/"
         if [ ${DUMP_LOG_ON_ERROR} = 1 ]; then
-            cat "${LOG_DIR}/${LOG_FILE}"
+            tail -n 150 "${LOG_DIR}/${LOG_FILE}"
         fi
         exit 1
     fi
