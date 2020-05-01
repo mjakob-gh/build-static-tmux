@@ -7,7 +7,7 @@ export CPPFLAGS="-P"
 # ANSI Color Codes
 RED="\033[0;31m"
 GREEN="\033[0;32m"
-YELLOW="\033[0;33m"
+#YELLOW="\033[0;33m"
 BLUE="\033[0;34m"
 COLOR_END="\033[0m"
 
@@ -15,7 +15,14 @@ COLOR_END="\033[0m"
 PGM="${0##*/}" # Program basename
 
 # Scriptversion
-VERSION="3.1"
+VERSION=1.2
+
+# How many lines of the error log should be displayed
+LOG_LINES=50
+
+# system architecture
+ARCH=$(uname -m)
+TMUX_BIN="tmux.linux-${ARCH}"
 
 ######################################
 ###### BEGIN VERSION DEFINITION ######
@@ -82,24 +89,38 @@ usage()
 {
     exec >&2
     echo   ""
-    printf "%s Version: %s\n" "${PGM}" "${VERSION}"
+    echo "NAME"
+    printf "\t%b - %s\n" "${BLUE}${PGM}${COLOR_END}" "build a static TMUX release"
     echo   ""
-    echo   "Usage:"
-    echo   ""
-    printf "  ${PGM} [-c -d -h]\n"
-    printf "\t%s : %s\n" "-c" "compress the resulting binary with UPX."
-    printf "\t%s : %s\n" "-d" "dump the log of the current buildstep to stdout if an error occurs."
-    printf "\t%s : %s\n" "-h" "print this help message."
+    echo   "SYNOPSIS"
+    printf "\t%b" "${PGM} ${BLUE}[-hcd]${COLOR_END}\n"
     echo ""
-    echo "ENVIRONMENT variables:"
-    echo "USE_UPX           : set to \"1\" to compress the resulting binary with UPX (see argument \"-c\" above)."
-    echo "DUMP_LOG_ON_ERROR : set to \"1\" to dump the log of the current buildstep to stdout if an error occurs (see argument \"-d\" above)."
+    echo   "DESCRIPTION"
     echo ""
-    echo "HINT:"
-    echo "In case you are behind a proxy, you can define the http_proxy"
-    echo "variables to download the necessary files like this:"
-    printf "${YELLOW}export http_proxy=\"http://<username>:<password>@<Proxy_DNS_or_IP_address>:<Port>/\"${COLOR_END}\n"
-    printf "${YELLOW}export https_proxy=\"http://<username>:<password>@<Proxy_DNS_or_IP_address>:<Port>/\"${COLOR_END}\n"
+    printf "\t%s\n" "The following options are available:"
+    echo ""
+    printf "\t%b\t%s\n" "${BLUE}-c${COLOR_END}" "compress the resulting binary with UPX."
+    echo ""
+    printf "\t%b\t%s\n" "${BLUE}-d${COLOR_END}" "dump the log of the current buildstep to stdout if an error occurs."
+    echo ""
+    printf "\t%b\t%s\n" "${BLUE}-h${COLOR_END}" "print this help message."
+    echo ""
+    echo "ENVIRONMENT"
+    printf "\t%b\n" "The following environment variables affect the execution of ${BLUE}${PGM}${COLOR_END}"
+    echo ""
+    printf "\t%s\t\t\t%b\n" "USE_UPX" "set to \"1\" to compress the resulting binary with UPX (see argument ${BLUE}-c${COLOR_END} above)."
+    echo ""
+    printf "\t%s\t%b\n" "DUMP_LOG_ON_ERROR" "set to \"1\" to dump the log of the current buildstep to stdout if an error occurs (see argument ${BLUE}-d${COLOR_END} above)."
+    echo ""
+    printf "\t%s\n" "In case you are behind a proxy, export these environment variables to download the necessary files:"
+    printf "\t%s\t%b\n" "http_proxy|HTTP_PROXY" "e.g. \"http://<username>:<password>@<Proxy_DNS_or_IP_address>:<Port>/\""
+    printf "\t%s\t%b\n" "https_proxy|HTTPS_PROXY" "e.g. \"http://<username>:<password>@<Proxy_DNS_or_IP_address>:<Port>/\""
+    echo ""
+    echo "EXIT STATUS"
+    printf "\t%b\n" "The ${BLUE}${PGM}${COLOR_END} utility exits 0 on success, and >0 if an error occurs."
+    echo ""
+    echo "VERSION"
+    printf "\t%s\n" "${VERSION}"
     echo ""
 }
 
@@ -110,20 +131,30 @@ usage()
 checkResult ()
 {
     if [ "$1" -eq 0 ]; then
-        printf "${GREEN}[OK]${COLOR_END}\n"
+        printf "%b\n" "${GREEN}[OK]${COLOR_END}"
     else
-        printf "${RED}[ERROR]${COLOR_END}\n"
-        echo "Check Buildlog in ${LOG_DIR}/"
-        if [ ${DUMP_LOG_ON_ERROR} = 1 ]; then
-            tail -n 150 "${LOG_DIR}/${LOG_FILE}"
+        printf "%b\n" "${RED}[ERROR]${COLOR_END}"
+        echo ""
+        if [ ${DUMP_LOG_ON_ERROR} = 0 ]; then
+            echo "Check Buildlog in ${LOG_DIR}/${LOG_FILE}"
+        else
+            echo "last ${LOG_LINES} from ${LOG_DIR}/${LOG_FILE}:"
+            echo "-----------------------------------------------"
+            echo "..."
+            tail -n ${LOG_LINES} "${LOG_DIR}/${LOG_FILE}"
+            echo ""
+            echo "-------------"
+            printf "%b\n" "${RED}build aborted${COLOR_END}"
+            echo ""
         fi
         exit 1
     fi
 }
 
-# set this variable to '1' to compress the resulting
-# executable with UPX
+# set this variable to '1' to
+# compress the resulting executable with UPX
 USE_UPX=${USE_UPX:-0}
+# print the last x lines of the log to stdout
 DUMP_LOG_ON_ERROR=${DUMP_LOG_ON_ERROR:-0}
 
 get_args "$@"
@@ -139,7 +170,7 @@ clear
 [ ! -d ${LOG_DIR} ]                  && mkdir ${LOG_DIR}
 
 # Clean up #
-printf "${BLUE}Cleaning up...${COLOR_END}\n"
+printf "%\bn" "${BLUE}Cleaning up...${COLOR_END}"
 rm -rf ${TMUX_STATIC_HOME:?}/include/*
 rm -rf ${TMUX_STATIC_HOME:?}/lib/*
 rm -rf ${TMUX_STATIC_HOME:?}/bin/*
@@ -152,9 +183,16 @@ rm -rf ${TMUX_STATIC_HOME:?}/src/ncurses-${NCURSES_VERSION}
 rm -rf ${TMUX_STATIC_HOME:?}/src/tmux-${TMUX_VERSION}
 
 echo ""
-printf "${BLUE}*************************************${COLOR_END}\n"
-printf "${BLUE}** Starting to build a static TMUX **${COLOR_END}\n"
-printf "${BLUE}*************************************${COLOR_END}\n"
+echo "current settings"
+echo "----------------"
+echo "USE_UPX:           ${USE_UPX}"
+echo "DUMP_LOG_ON_ERROR: ${DUMP_LOG_ON_ERROR}"
+echo "LOG_LINES:         ${LOG_LINES}"
+
+echo ""
+printf "%b\n" "${BLUE}*********************************************${COLOR_END}"
+printf "%b\n" "${BLUE}** Starting to build a static TMUX release **${COLOR_END}"
+printf "%b\n" "${BLUE}*********************************************${COLOR_END}"
 
 TIME_START=$(date +%s)
 
@@ -287,9 +325,10 @@ checkResult $?
 cd ${TMUX_STATIC_HOME} || exit 1
 
 # strip text from binary
-cp ${TMUX_STATIC_HOME}/bin/tmux ${TMUX_STATIC_HOME}/bin/tmux.stripped
+cp ${TMUX_STATIC_HOME}/bin/tmux ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}
+cp ${TMUX_STATIC_HOME}/bin/${TMUX_BIN} ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.stripped
 printf "Stripping....."
-strip ${TMUX_STATIC_HOME}/bin/tmux.stripped
+strip ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.stripped
 checkResult $?
 
 # compress with upx, when choosen
@@ -308,22 +347,24 @@ if [ -n "${USE_UPX}" ] && [ ${USE_UPX} = 1 ]; then
     mv upx ${TMUX_STATIC_HOME}/bin/
 
     # compress binary with upx
-    cp ${TMUX_STATIC_HOME}/bin/tmux.stripped ${TMUX_STATIC_HOME}/bin/tmux.upx
+    cp ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.stripped ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.upx
     printf "Compressing..."
-    ${TMUX_STATIC_HOME}/bin/upx -q --best --ultra-brute ${TMUX_STATIC_HOME}/bin/tmux.upx > /dev/null 2>&1
+    ${TMUX_STATIC_HOME}/bin/upx -q --best --ultra-brute ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.upx > /dev/null 2>&1
     checkResult $?
 fi
 
 echo ""
-echo "Standard tmux binary:   ${TMUX_STATIC_HOME}/bin/tmux.gz"
-echo "Stripped tmux binary:   ${TMUX_STATIC_HOME}/bin/tmux.stripped.gz"
+echo "Resulting files:"
+echo "----------------"
+echo "Standard tmux binary:   ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.gz"
+echo "Stripped tmux binary:   ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.stripped.gz"
 
-gzip ${TMUX_STATIC_HOME}/bin/tmux
-gzip ${TMUX_STATIC_HOME}/bin/tmux.stripped
+gzip ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}
+gzip ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.stripped
 
-if [ -n "${USE_UPX}" ] && [ ${USE_UPX} = "TRUE" ]; then
-    echo "Compressed tmux binary: ${TMUX_STATIC_HOME}/bin/tmux.upx.gz"
-	gzip ${TMUX_STATIC_HOME}/bin/tmux.upx
+if [ -n "${USE_UPX}" ] && [ ${USE_UPX} = 1 ]; then
+    echo "Compressed tmux binary: ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.upx.gz"
+	gzip ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.upx
 fi
 
 echo ""
