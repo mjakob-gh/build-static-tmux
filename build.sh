@@ -27,7 +27,7 @@ TMUX_BIN="tmux.linux-${ARCH}"
 ######################################
 ###### BEGIN VERSION DEFINITION ######
 ######################################
-TMUX_VERSION=3.1
+TMUX_VERSION=3.1a
 MUSL_VERSION=1.2.0
 NCURSES_VERSION=6.1
 LIBEVENT_VERSION=2.1.11
@@ -141,7 +141,11 @@ checkResult ()
             echo "last ${LOG_LINES} from ${LOG_DIR}/${LOG_FILE}:"
             echo "-----------------------------------------------"
             echo "..."
-            tail -n ${LOG_LINES} "${LOG_DIR}/${LOG_FILE}"
+            if [ -f "${LOG_DIR}/${LOG_FILE}" ]; then
+                tail -n ${LOG_LINES} "${LOG_DIR}/${LOG_FILE}"
+            else
+                echo "Oops, logfile ${LOG_DIR}/${LOG_FILE} not found, something gone wrong!"
+            fi
             echo ""
             echo "-------------"
             printf "%b\n" "${RED}build aborted${COLOR_END}"
@@ -313,6 +317,9 @@ cd tmux-${TMUX_VERSION} || exit 1
 printf "Configuring..."
 ./configure --prefix=${TMUX_STATIC_HOME} --enable-static --includedir="${TMUX_STATIC_HOME}/include" --libdir="${TMUX_STATIC_HOME}/lib" CFLAGS="-I${TMUX_STATIC_HOME}/include" LDFLAGS="-L${TMUX_STATIC_HOME}/lib" CPPFLAGS="-I${TMUX_STATIC_HOME}/include" LIBEVENT_LIBS="-L${TMUX_STATIC_HOME}/lib -levent" LIBNCURSES_CFLAGS="-I${TMUX_STATIC_HOME}/include/ncurses" LIBNCURSES_LIBS="-L${TMUX_STATIC_HOME}/lib -lncurses" LIBTINFO_CFLAGS="-I${TMUX_STATIC_HOME}/include/ncurses" LIBTINFO_LIBS="-L${TMUX_STATIC_HOME}/lib -ltinfo" > ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
+
+# patch file.c
+sed -i 's|#include <sys/queue.h>|#include "compat/queue.h"|g' file.c
 
 printf "Compiling....."
 make >> ${LOG_DIR}/${LOG_FILE} 2>&1
