@@ -23,13 +23,19 @@ LOG_LINES=50
 # os and pocessor architecture
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 
-# sigh, in linux some use "x86_64",
-# and others "amd64"
-if [ "$(uname -m)" = "x86_64" ]; then
-    ARCH="amd64"
-else
-    ARCH=$(uname -m)
-fi
+# sigh, in linux some use "x86_64", "aarch64"
+# and others "amd64" or "arm64" the upx developers 
+case "$(uname -m)" in
+    "aarch64")
+        ARCH="arm64"
+        ;;
+    "x86_64")
+        ARCH="amd64"
+        ;;
+    *)
+        ARCH=$(uname -m)
+        ;;
+esac
 
 TMUX_BIN="tmux.${OS}-${ARCH}"
 
