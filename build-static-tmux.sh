@@ -36,7 +36,6 @@ UPX_VERSION=3.96
 ####### END VERSION DEFINITION #######
 ######################################
 
-
 #TMUX_STATIC_HOME="${HOME}/tmux-static"
 TMUX_STATIC_HOME="/tmp/tmux-static"
 
@@ -162,7 +161,7 @@ checkResult ()
             printf "%b\n" "${RED}build aborted${COLOR_END}"
             echo ""
         fi
-        exit 1
+        exit $1
     fi
 }
 
