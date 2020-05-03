@@ -15,7 +15,7 @@ COLOR_END="\033[0m"
 PGM="${0##*/}" # Program basename
 
 # Scriptversion
-VERSION=1.2
+VERSION=1.3
 
 # How many lines of the error log should be displayed
 LOG_LINES=50
@@ -75,13 +75,32 @@ get_args()
             d)
 				DUMP_LOG_ON_ERROR=1
                 ;;
+            '')
+                ;;
             *)
+                echo ""
+                usage_options
+                exit 1
                 ;;
         esac
     done
     shift $((OPTIND - 1))
 }
 
+#
+# print valid options
+#
+usage_options()
+{
+    printf "\t%s\n" "The following options are available:"
+    echo ""
+    printf "\t%b\t%s\n" "${BLUE}-c${COLOR_END}" "compress the resulting binary with UPX."
+    echo ""
+    printf "\t%b\t%s\n" "${BLUE}-d${COLOR_END}" "dump the log of the current buildstep to stdout if an error occurs."
+    echo ""
+    printf "\t%b\t%s\n" "${BLUE}-h${COLOR_END}" "print this help message."
+    echo ""
+}
 #
 # print the usage message
 #
@@ -93,17 +112,10 @@ usage()
     printf "\t%b - %s\n" "${BLUE}${PGM}${COLOR_END}" "build a static TMUX release"
     echo   ""
     echo   "SYNOPSIS"
-    printf "\t%b" "${PGM} ${BLUE}[-h | -c -d]${COLOR_END}\n"
+    printf "\t%b" "${BLUE}${PGM} [-h | -c -d]${COLOR_END}\n"
     echo ""
     echo   "DESCRIPTION"
-    printf "\t%s\n" "The following options are available:"
-    echo ""
-    printf "\t%b\t%s\n" "${BLUE}-c${COLOR_END}" "compress the resulting binary with UPX."
-    echo ""
-    printf "\t%b\t%s\n" "${BLUE}-d${COLOR_END}" "dump the log of the current buildstep to stdout if an error occurs."
-    echo ""
-    printf "\t%b\t%s\n" "${BLUE}-h${COLOR_END}" "print this help message."
-    echo ""
+    usage_options
     echo "ENVIRONMENT"
     printf "\t%b\n" "The following environment variables affect the execution of ${BLUE}${PGM}${COLOR_END}"
     echo ""
@@ -220,7 +232,13 @@ checkResult $?
 cd musl-${MUSL_VERSION} || exit 1
 
 printf "Configuring..."
-./configure --enable-gcc-wrapper --disable-shared --prefix=${TMUX_STATIC_HOME} --bindir=${TMUX_STATIC_HOME}/bin --includedir=${TMUX_STATIC_HOME}/include --libdir=${TMUX_STATIC_HOME}/lib > ${LOG_DIR}/${LOG_FILE} 2>&1
+./configure \
+    --enable-gcc-wrapper \
+    --disable-shared \
+    --prefix=${TMUX_STATIC_HOME} \
+    --bindir=${TMUX_STATIC_HOME}/bin \
+    --includedir=${TMUX_STATIC_HOME}/include \
+    --libdir=${TMUX_STATIC_HOME}/lib > ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
 printf "Compiling....."
@@ -253,7 +271,12 @@ checkResult $?
 cd libevent-${LIBEVENT_VERSION}-stable || exit 1
 
 printf "Configuring..."
-./configure --prefix=${TMUX_STATIC_HOME} --includedir=${TMUX_STATIC_HOME}/include --libdir=${TMUX_STATIC_HOME}/lib --disable-shared --disable-samples > ${LOG_DIR}/${LOG_FILE} 2>&1
+./configure \
+    --prefix=${TMUX_STATIC_HOME} \
+    --includedir=${TMUX_STATIC_HOME}/include \
+    --libdir=${TMUX_STATIC_HOME}/lib \
+    --disable-shared \
+    --disable-samples > ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
 printf "Compiling....."
@@ -284,7 +307,20 @@ checkResult $?
 cd ncurses-${NCURSES_VERSION} || exit 1
 
 printf "Configuring..."
-./configure --prefix=${TMUX_STATIC_HOME} --includedir=${TMUX_STATIC_HOME}/include --libdir=${TMUX_STATIC_HOME}/lib --enable-pc-files --with-pkg-config=${TMUX_STATIC_HOME}/lib/pkgconfig --with-pkg-config-libdir=${TMUX_STATIC_HOME}/lib/pkgconfig --without-ada --without-tests --without-manpages --with-ticlib --with-termlib --with-default-terminfo-dir=/usr/share/terminfo --with-terminfo-dirs=/etc/terminfo:/lib/terminfo:/usr/share/terminfo > ${LOG_DIR}/${LOG_FILE} 2>&1
+./configure \
+    --prefix=${TMUX_STATIC_HOME} \
+    --includedir=${TMUX_STATIC_HOME}/include \
+    --libdir=${TMUX_STATIC_HOME}/lib \
+    --enable-pc-files \
+    --with-pkg-config=${TMUX_STATIC_HOME}/lib/pkgconfig \
+    --with-pkg-config-libdir=${TMUX_STATIC_HOME}/lib/pkgconfig \
+    --without-ada \
+    --without-tests \
+    --without-manpages \
+    --with-ticlib \
+    --with-termlib \
+    --with-default-terminfo-dir=/usr/share/terminfo \
+    --with-terminfo-dirs=/etc/terminfo:/lib/terminfo:/usr/share/terminfo > ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
 printf "Compiling....."
@@ -315,7 +351,18 @@ checkResult $?
 cd tmux-${TMUX_VERSION} || exit 1
 
 printf "Configuring..."
-./configure --prefix=${TMUX_STATIC_HOME} --enable-static --includedir="${TMUX_STATIC_HOME}/include" --libdir="${TMUX_STATIC_HOME}/lib" CFLAGS="-I${TMUX_STATIC_HOME}/include" LDFLAGS="-L${TMUX_STATIC_HOME}/lib" CPPFLAGS="-I${TMUX_STATIC_HOME}/include" LIBEVENT_LIBS="-L${TMUX_STATIC_HOME}/lib -levent" LIBNCURSES_CFLAGS="-I${TMUX_STATIC_HOME}/include/ncurses" LIBNCURSES_LIBS="-L${TMUX_STATIC_HOME}/lib -lncurses" LIBTINFO_CFLAGS="-I${TMUX_STATIC_HOME}/include/ncurses" LIBTINFO_LIBS="-L${TMUX_STATIC_HOME}/lib -ltinfo" > ${LOG_DIR}/${LOG_FILE} 2>&1
+./configure --prefix=${TMUX_STATIC_HOME} \
+    --enable-static \
+    --includedir="${TMUX_STATIC_HOME}/include" \
+    --libdir="${TMUX_STATIC_HOME}/lib" \
+    CFLAGS="-I${TMUX_STATIC_HOME}/include" \
+    LDFLAGS="-L${TMUX_STATIC_HOME}/lib" \
+    CPPFLAGS="-I${TMUX_STATIC_HOME}/include" \
+    LIBEVENT_LIBS="-L${TMUX_STATIC_HOME}/lib -levent" \
+    LIBNCURSES_CFLAGS="-I${TMUX_STATIC_HOME}/include/ncurses" \
+    LIBNCURSES_LIBS="-L${TMUX_STATIC_HOME}/lib -lncurses" \
+    LIBTINFO_CFLAGS="-I${TMUX_STATIC_HOME}/include/ncurses" \
+    LIBTINFO_LIBS="-L${TMUX_STATIC_HOME}/lib -ltinfo" > ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
 # patch file.c
