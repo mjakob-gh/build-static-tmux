@@ -365,7 +365,7 @@ printf "Configuring..."
 checkResult $?
 
 # patch file.c
-#sed -i 's|#include <sys/queue.h>|#include "compat/queue.h"|g' file.c
+sed -i 's|#include <sys/queue.h>||g' file.c
 
 printf "Compiling....."
 make >> ${LOG_DIR}/${LOG_FILE} 2>&1
