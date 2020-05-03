@@ -1,4 +1,12 @@
 language: sh
+
+os:
+  - linux
+  
+arch:
+  - amd64
+  - arm64
+  
 script: sh ./build-static-tmux.sh
 
 deploy:
