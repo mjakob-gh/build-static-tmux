@@ -20,9 +20,18 @@ VERSION=1.3
 # How many lines of the error log should be displayed
 LOG_LINES=50
 
-# system architecture
-ARCH=$(uname -m)
-TMUX_BIN="tmux.linux-${ARCH}"
+# os and pocessor architecture
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+
+# sigh, in linux some use "x86_64",
+# and others "amd64"
+if [ "$(uname -m)" = "x86_64" ]; then
+    ARCH="amd64"
+else
+    ARCH=$(uname -m)
+fi
+
+TMUX_BIN="tmux.${OS}-${ARCH}"
 
 ######################################
 ###### BEGIN VERSION DEFINITION ######
@@ -53,7 +62,7 @@ NCURSES_URL="http://ftp.gnu.org/gnu/ncurses"
 LIBEVENT_ARCHIVE="libevent-${LIBEVENT_VERSION}-stable.tar.gz"
 LIBEVENT_URL="https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable"
 
-UPX_ARCHIVE="upx-${UPX_VERSION}-amd64_linux.tar.xz"
+UPX_ARCHIVE="upx-${UPX_VERSION}-${ARCH}_${OS}.tar.xz"
 UPX_URL="https://github.com/upx/upx/releases/download/v${UPX_VERSION}"
 
 #
@@ -277,6 +286,7 @@ printf "Configuring..."
     --includedir=${TMUX_STATIC_HOME}/include \
     --libdir=${TMUX_STATIC_HOME}/lib \
     --disable-shared \
+    --disable-libevent-regress \
     --disable-samples >> ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
@@ -403,7 +413,7 @@ if [ -n "${USE_UPX}" ] && [ ${USE_UPX} = 1 ]; then
         checkResult $?
     fi
     tar xJf ${UPX_ARCHIVE}
-    cd upx-${UPX_VERSION}-amd64_linux || exit 1
+    cd upx-${UPX_VERSION}-${ARCH}_${OS} || exit 1
     mv upx ${TMUX_STATIC_HOME}/bin/
 
     # compress binary with upx
