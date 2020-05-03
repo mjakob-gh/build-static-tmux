@@ -15,7 +15,7 @@ COLOR_END="\033[0m"
 PGM="${0##*/}" # Program basename
 
 # Scriptversion
-VERSION=1.3
+VERSION=1.2
 
 # How many lines of the error log should be displayed
 LOG_LINES=50
@@ -93,10 +93,9 @@ usage()
     printf "\t%b - %s\n" "${BLUE}${PGM}${COLOR_END}" "build a static TMUX release"
     echo   ""
     echo   "SYNOPSIS"
-    printf "\t%b" "${PGM} ${BLUE}[-hcd]${COLOR_END}\n"
+    printf "\t%b" "${PGM} ${BLUE}[-h | -c -d]${COLOR_END}\n"
     echo ""
     echo   "DESCRIPTION"
-    echo ""
     printf "\t%s\n" "The following options are available:"
     echo ""
     printf "\t%b\t%s\n" "${BLUE}-c${COLOR_END}" "compress the resulting binary with UPX."
@@ -155,7 +154,8 @@ checkResult ()
     fi
 }
 
-# set this variable to '1' to
+# export this variables with value 1 in the shell,
+# or use the -c and/or -d argument
 # compress the resulting executable with UPX
 USE_UPX=${USE_UPX:-0}
 # print the last x lines of the log to stdout
@@ -319,7 +319,7 @@ printf "Configuring..."
 checkResult $?
 
 # patch file.c
-sed -i 's|#include <sys/queue.h>|#include "compat/queue.h"|g' file.c
+#sed -i 's|#include <sys/queue.h>|#include "compat/queue.h"|g' file.c
 
 printf "Compiling....."
 make >> ${LOG_DIR}/${LOG_FILE} 2>&1
