@@ -27,7 +27,7 @@ TMUX_BIN="tmux.linux-${ARCH}"
 ######################################
 ###### BEGIN VERSION DEFINITION ######
 ######################################
-TMUX_VERSION=3.1a
+TMUX_VERSION=3.1b
 MUSL_VERSION=1.2.0
 NCURSES_VERSION=6.1
 LIBEVENT_VERSION=2.1.11
@@ -369,7 +369,7 @@ printf "Configuring..."
 checkResult $?
 
 # patch file.c
-sed -i 's|#include <sys/queue.h>||g' file.c
+#sed -i 's|#include <sys/queue.h>||g' file.c
 
 printf "Compiling....."
 make >> ${LOG_DIR}/${LOG_FILE} 2>&1
