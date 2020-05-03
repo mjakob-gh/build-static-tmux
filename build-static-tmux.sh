@@ -185,7 +185,7 @@ clear
 [ ! -d ${LOG_DIR} ]                  && mkdir ${LOG_DIR}
 
 # Clean up #
-printf "%\bn" "${BLUE}Cleaning up...${COLOR_END}"
+printf "%b\n" "${BLUE}Cleaning up...${COLOR_END}"
 rm -rf ${TMUX_STATIC_HOME:?}/include/*
 rm -rf ${TMUX_STATIC_HOME:?}/lib/*
 rm -rf ${TMUX_STATIC_HOME:?}/bin/*
@@ -211,6 +211,7 @@ printf "%b\n" "${BLUE}*********************************************${COLOR_END}"
 
 TIME_START=$(date +%s)
 
+###############################################################
 echo ""
 echo "musl ${MUSL_VERSION}"
 echo "------------------"
@@ -220,7 +221,7 @@ LOG_FILE="musl-${MUSL_VERSION}.log"
 cd ${TMUX_STATIC_HOME}/src || exit 1
 if [ ! -f ${MUSL_ARCHIVE} ]; then
     printf "Downloading..."
-    wget -q ${MUSL_URL}/${MUSL_ARCHIVE}
+    wget --no-verbose ${MUSL_URL}/${MUSL_ARCHIVE} > ${LOG_DIR}/${LOG_FILE} 2>&1
     checkResult $?
 fi
 
@@ -237,7 +238,7 @@ printf "Configuring..."
     --prefix=${TMUX_STATIC_HOME} \
     --bindir=${TMUX_STATIC_HOME}/bin \
     --includedir=${TMUX_STATIC_HOME}/include \
-    --libdir=${TMUX_STATIC_HOME}/lib > ${LOG_DIR}/${LOG_FILE} 2>&1
+    --libdir=${TMUX_STATIC_HOME}/lib >> ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
 printf "Compiling....."
@@ -250,6 +251,7 @@ checkResult $?
 
 export CC="${TMUX_STATIC_HOME}/bin/musl-gcc -static"
 
+###############################################################
 echo ""
 echo "libevent ${LIBEVENT_VERSION}-stable"
 echo "------------------"
@@ -259,7 +261,7 @@ LOG_FILE="libevent-${LIBEVENT_VERSION}-stable.log"
 cd ${TMUX_STATIC_HOME}/src || exit 1
 if [ ! -f ${LIBEVENT_ARCHIVE} ]; then
     printf "Downloading..."
-    wget -q ${LIBEVENT_URL}/${LIBEVENT_ARCHIVE}
+    wget --no-verbose ${LIBEVENT_URL}/${LIBEVENT_ARCHIVE} > ${LOG_DIR}/${LOG_FILE} 2>&1
     checkResult $?
 fi
 
@@ -275,7 +277,7 @@ printf "Configuring..."
     --includedir=${TMUX_STATIC_HOME}/include \
     --libdir=${TMUX_STATIC_HOME}/lib \
     --disable-shared \
-    --disable-samples > ${LOG_DIR}/${LOG_FILE} 2>&1
+    --disable-samples >> ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
 printf "Compiling....."
@@ -286,6 +288,7 @@ printf "Installing...."
 make install >> ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
+###############################################################
 echo ""
 echo "ncurses ${NCURSES_VERSION}"
 echo "------------------"
@@ -295,7 +298,7 @@ LOG_FILE="ncurses-${NCURSES_VERSION}.log"
 cd ${TMUX_STATIC_HOME}/src || exit 1
 if [ ! -f ${NCURSES_ARCHIVE} ]; then
     printf "Downloading..."
-    wget -q ${NCURSES_URL}/${NCURSES_ARCHIVE}
+    wget --no-verbose ${NCURSES_URL}/${NCURSES_ARCHIVE} > ${LOG_DIR}/${LOG_FILE} 2>&1
     checkResult $?
 fi
 
@@ -319,7 +322,7 @@ printf "Configuring..."
     --with-ticlib \
     --with-termlib \
     --with-default-terminfo-dir=/usr/share/terminfo \
-    --with-terminfo-dirs=/etc/terminfo:/lib/terminfo:/usr/share/terminfo > ${LOG_DIR}/${LOG_FILE} 2>&1
+    --with-terminfo-dirs=/etc/terminfo:/lib/terminfo:/usr/share/terminfo >> ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
 printf "Compiling....."
@@ -330,6 +333,7 @@ printf "Installing...."
 make install >> ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
+###############################################################
 echo ""
 echo "tmux ${TMUX_VERSION}"
 echo "------------------"
@@ -339,7 +343,7 @@ LOG_FILE="tmux-${TMUX_VERSION}.log"
 cd ${TMUX_STATIC_HOME}/src || exit 1
 if [ ! -f ${TMUX_ARCHIVE} ]; then
     printf "Downloading..."
-    wget -q ${TMUX_URL}/${TMUX_ARCHIVE}
+    wget --no-verbose ${TMUX_URL}/${TMUX_ARCHIVE} > ${LOG_DIR}/${LOG_FILE} 2>&1
     checkResult $?
 fi
 
@@ -361,7 +365,7 @@ printf "Configuring..."
     LIBNCURSES_CFLAGS="-I${TMUX_STATIC_HOME}/include/ncurses" \
     LIBNCURSES_LIBS="-L${TMUX_STATIC_HOME}/lib -lncurses" \
     LIBTINFO_CFLAGS="-I${TMUX_STATIC_HOME}/include/ncurses" \
-    LIBTINFO_LIBS="-L${TMUX_STATIC_HOME}/lib -ltinfo" > ${LOG_DIR}/${LOG_FILE} 2>&1
+    LIBTINFO_LIBS="-L${TMUX_STATIC_HOME}/lib -ltinfo" >> ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
 # patch file.c
@@ -374,6 +378,8 @@ checkResult $?
 printf "Installing...."
 make install >> ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
+
+###############################################################
 
 cd ${TMUX_STATIC_HOME} || exit 1
 
@@ -392,7 +398,7 @@ if [ -n "${USE_UPX}" ] && [ ${USE_UPX} = 1 ]; then
     cd ${TMUX_STATIC_HOME}/src || exit 1
     if [ ! -f ${UPX_ARCHIVE} ]; then
         printf "Downloading..."
-        wget -q ${UPX_URL}/${UPX_ARCHIVE}
+        wget --no-verbose ${UPX_URL}/${UPX_ARCHIVE}
         checkResult $?
     fi
     tar xJf ${UPX_ARCHIVE}
