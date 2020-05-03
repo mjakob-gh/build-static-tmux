@@ -392,13 +392,14 @@ checkResult $?
 
 # compress with upx, when choosen
 if [ -n "${USE_UPX}" ] && [ ${USE_UPX} = 1 ]; then
+    LOG_FILE="upx-${UPX_VERSION}.log"
     echo ""
     echo "Compressing binary with UPX ${UPX_VERSION}"
     echo "--------------------------------"
     cd ${TMUX_STATIC_HOME}/src || exit 1
     if [ ! -f ${UPX_ARCHIVE} ]; then
         printf "Downloading..."
-        wget --no-verbose ${UPX_URL}/${UPX_ARCHIVE}
+        wget --no-verbose ${UPX_URL}/${UPX_ARCHIVE} >> ${LOG_DIR}/${LOG_FILE} 2>&1
         checkResult $?
     fi
     tar xJf ${UPX_ARCHIVE}
@@ -408,7 +409,7 @@ if [ -n "${USE_UPX}" ] && [ ${USE_UPX} = 1 ]; then
     # compress binary with upx
     cp ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.stripped ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.upx
     printf "Compressing..."
-    ${TMUX_STATIC_HOME}/bin/upx -q --best --ultra-brute ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.upx > /dev/null 2>&1
+    ${TMUX_STATIC_HOME}/bin/upx -q --best --ultra-brute ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.upx >> ${LOG_DIR}/${LOG_FILE} 2>&1
     checkResult $?
 fi
 
