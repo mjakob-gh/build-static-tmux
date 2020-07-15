@@ -42,7 +42,7 @@ TMUX_BIN="tmux.${OS}-${ARCH}"
 ######################################
 ###### BEGIN VERSION DEFINITION ######
 ######################################
-TMUX_VERSION=3.2
+TMUX_VERSION=3.2-rc
 MUSL_VERSION=1.2.0
 NCURSES_VERSION=6.2
 LIBEVENT_VERSION=2.1.11
@@ -84,10 +84,10 @@ get_args()
                 exit 0
                 ;;
             c)
-				USE_UPX=1
+		USE_UPX=1
                 ;;
             d)
-				DUMP_LOG_ON_ERROR=1
+		DUMP_LOG_ON_ERROR=1
                 ;;
             '')
                 ;;
