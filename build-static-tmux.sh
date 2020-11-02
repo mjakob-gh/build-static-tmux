@@ -287,13 +287,16 @@ checkResult $?
 cd libevent-${LIBEVENT_VERSION}-stable || exit 1
 
 printf "Configuring..."
+printf "Configuring..."
 ./configure \
-    --prefix=${TMUX_STATIC_HOME} \
+    --prefix=${TMUX_STATIC_HOME}             \
     --includedir=${TMUX_STATIC_HOME}/include \
-    --libdir=${TMUX_STATIC_HOME}/lib \
-    --disable-shared \
-    --disable-libevent-regress \
-    --disable-samples >> ${LOG_DIR}/${LOG_FILE} 2>&1
+    --libdir=${TMUX_STATIC_HOME}/lib         \
+    --disable-shared                         \
+    --disable-openssl                        \
+    --disable-libevent-regress               \
+    --disable-samples                        \
+    >> ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
 printf "Compiling....."
