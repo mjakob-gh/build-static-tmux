@@ -25,10 +25,14 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
+      # Do the build step
       - name: run the buildscript
         run: chmod 755 build-static-tmux.sh
       - name: run the buildscript
         run: ./build-static-tmux.sh
-
-
+      # Do the upload step
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: releases
+          path: /tmp/tmux-static/bin/tmux.*.gz
