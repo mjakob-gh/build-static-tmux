@@ -9,7 +9,6 @@ A script or building a static tmux for linux which should run on a wide selectio
 * [libevent 2.1.12](https://github.com/libevent/libevent/)
 
 Binaries available in releases.
-Build on Travis-CI (Ubuntu 16.04.6 LTS, x86_64-pc-linux-gnu)
-[![Build Status](https://travis-ci.org/mjakob-gh/build-static-tmux.svg?branch=master)](https://travis-ci.org/mjakob-gh/build-static-tmux)
+Build with GutHub actions (Ubuntu 18.04, x86_64-pc-linux-gnu)
+[![Build Status](https://github.com/mjakob-gh/build-static-tmux/actions/workflows/build.yml/badge.svg)]
 
-Beware: the upx compressed file will not work on the Windows Subsystem for Linux (WSL), use the stripped Version.
