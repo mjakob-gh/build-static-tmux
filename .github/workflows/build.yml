@@ -36,5 +36,6 @@ jobs:
         with:
           artifacts: "/tmp/tmux-static/bin/tmux.*.gz"
           replacesArtifacts: true
+          allowUpdates: true
           bodyFile: "README.md"
           token: ${{ secrets.GITHUB_TOKEN }}
