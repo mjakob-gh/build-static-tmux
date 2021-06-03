@@ -9,6 +9,6 @@ A script or building a static tmux for linux which should run on a wide selectio
 * [libevent 2.1.12](https://github.com/libevent/libevent/)
 
 Binaries available in releases.
-Build with GutHub actions (Ubuntu 18.04, x86_64-pc-linux-gnu)
+Build with GitHub actions (Ubuntu 18.04, x86_64-pc-linux-gnu)
 
 ![Build Status](https://github.com/mjakob-gh/build-static-tmux/actions/workflows/build.yml/badge.svg)
