@@ -32,9 +32,8 @@ jobs:
         run: ./build-static-tmux.sh
       # Do the upload step
       - name: Upload artifacts
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+        uses: ncipollo/release-action@v1
         with:
-          files: /tmp/tmux-static/bin/tmux.*.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: "/tmp/tmux-static/bin/tmux.*.gz"
+          bodyFile: "README.md"
+          token: ${{ secrets.GITHUB_TOKEN }}
