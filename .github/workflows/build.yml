@@ -18,7 +18,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-18.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -32,7 +32,9 @@ jobs:
         run: ./build-static-tmux.sh
       # Do the upload step
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: releases
-          path: /tmp/tmux-static/bin/tmux.*.gz
+          files: /tmp/tmux-static/bin/tmux.*.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
