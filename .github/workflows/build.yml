@@ -29,13 +29,12 @@ jobs:
 
       # Do the build step
       - name: run the buildscript
-        run: chmod 755 build-static-tmux.sh
-      - name: run the buildscript
-        run: ./build-static-tmux.sh
+        run: /bin/sh build-static-tmux.sh
       # Do the upload step
       - name: Upload artifacts
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.8.4
         with:
           artifacts: "/tmp/tmux-static/bin/tmux.*.gz"
+          replacesArtifacts: true
           bodyFile: "README.md"
           token: ${{ secrets.GITHUB_TOKEN }}
