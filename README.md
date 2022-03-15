@@ -5,7 +5,7 @@ A script or building a static tmux for linux which should run on a wide selectio
 **Versions**
 * [tmux 3.2a](https://github.com/tmux/tmux/)
 * [musl 1.2.2](https://www.musl-libc.org/)
-* [ncurses 6.2](https://invisible-island.net/ncurses/)
+* [ncurses 6.3](https://invisible-island.net/ncurses/)
 * [libevent 2.1.12](https://github.com/libevent/libevent/)
 
 Binaries available in releases.
