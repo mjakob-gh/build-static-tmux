@@ -15,7 +15,7 @@ COLOR_END="\033[0m"
 PGM="${0##*/}" # Program basename
 
 # Scriptversion
-VERSION=3.2a
+VERSION=3.3
 
 # How many lines of the error log should be displayed
 LOG_LINES=50
@@ -42,8 +42,8 @@ TMUX_BIN="tmux.${OS}-${ARCH}"
 ######################################
 ###### BEGIN VERSION DEFINITION ######
 ######################################
-TMUX_VERSION=3.2a
-MUSL_VERSION=1.2.2
+TMUX_VERSION=3.3
+MUSL_VERSION=1.2.3
 NCURSES_VERSION=6.3
 LIBEVENT_VERSION=2.1.12
 UPX_VERSION=3.96
