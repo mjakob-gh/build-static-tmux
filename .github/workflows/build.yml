@@ -26,7 +26,7 @@ jobs:
         run: /bin/sh build-static-tmux.sh
       # Do the upload step
       - name: Upload artifacts
-        uses: ncipollo/release-action@v1.8.4
+        uses: ncipollo/release-action@v1
         with:
           artifacts: "/tmp/tmux-static/bin/tmux.*.gz"
           replacesArtifacts: true
