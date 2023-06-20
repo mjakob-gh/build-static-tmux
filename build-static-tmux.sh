@@ -52,7 +52,7 @@ UPX_VERSION=4.0.0
 ######################################
 
 #TMUX_STATIC_HOME="${HOME}/tmux-static"
-TMUX_STATIC_HOME="/tmp/tmux-static"
+TMUX_STATIC_HOME="${TMUX_STATIC_HOME:-/tmp/tmux-static}"
 
 LOG_DIR="${TMUX_STATIC_HOME}/log"
 
