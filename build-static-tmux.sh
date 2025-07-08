@@ -42,11 +42,11 @@ TMUX_BIN="tmux.${OS}-${ARCH}"
 ######################################
 ###### BEGIN VERSION DEFINITION ######
 ######################################
-TMUX_VERSION=3.5
+TMUX_VERSION=3.5a
 MUSL_VERSION=1.2.5
 NCURSES_VERSION=6.5
 LIBEVENT_VERSION=2.1.12
-UPX_VERSION=4.2.4
+UPX_VERSION=5.0.1
 ######################################
 ####### END VERSION DEFINITION #######
 ######################################
@@ -60,10 +60,10 @@ TMUX_ARCHIVE="tmux-${TMUX_VERSION}.tar.gz"
 TMUX_URL="https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}"
 
 MUSL_ARCHIVE="musl-${MUSL_VERSION}.tar.gz"
-MUSL_URL="https://www.musl-libc.org/releases"
+MUSL_URL="https://musl.libc.org/releases/"
 
 NCURSES_ARCHIVE="ncurses-${NCURSES_VERSION}.tar.gz"
-NCURSES_URL="https://invisible-island.net/archives/ncurses"
+NCURSES_URL="https://invisible-island.net/archives/ncurses/"
 
 LIBEVENT_ARCHIVE="libevent-${LIBEVENT_VERSION}-stable.tar.gz"
 LIBEVENT_URL="https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable"
@@ -335,20 +335,27 @@ printf "Configuring..."
     --with-pkg-config=${TMUX_STATIC_HOME}/lib/pkgconfig \
     --with-pkg-config-libdir=${TMUX_STATIC_HOME}/lib/pkgconfig \
     --without-ada \
+    --without-cxx \
+    --without-cxx-binding \
     --without-tests \
     --without-manpages \
+    --without-debug \
+    --disable-lib-suffixes \
     --with-ticlib \
     --with-termlib \
     --with-default-terminfo-dir=/usr/share/terminfo \
-    --with-terminfo-dirs=/etc/terminfo:/lib/terminfo:/usr/share/terminfo >> ${LOG_DIR}/${LOG_FILE} 2>&1
+    --with-terminfo-dirs=/etc/terminfo:/lib/terminfo:/usr/share/terminfo \
+    >> ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
 printf "Compiling....."
 make >> ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
+make >> /dev/null
+
 printf "Installing...."
-make install >> ${LOG_DIR}/${LOG_FILE} 2>&1
+make install.libs >> ${LOG_DIR}/${LOG_FILE} 2>&1
 checkResult $?
 
 ###############################################################
@@ -387,7 +394,7 @@ printf "Configuring..."
 checkResult $?
 
 # patch file.c
-sed -i 's|#include <sys/queue.h>||g' file.c
+#sed -i 's|#include <sys/queue.h>||g' file.c
 
 printf "Compiling....."
 make >> ${LOG_DIR}/${LOG_FILE} 2>&1
