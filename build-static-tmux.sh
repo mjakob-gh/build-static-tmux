@@ -62,8 +62,8 @@ TMUX_URL="https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}"
 MUSL_ARCHIVE="musl-${MUSL_VERSION}.tar.gz"
 MUSL_URL="https://www.musl-libc.org/releases"
 
-NCURSES_ARCHIVE="ncurses.tar.gz"
-NCURSES_URL="https://invisible-island.net/datafiles/release"
+NCURSES_ARCHIVE="ncurses-${NCURSES_VERSION}.tar.gz"
+NCURSES_URL="https://invisible-island.net/archives/ncurses"
 
 LIBEVENT_ARCHIVE="libevent-${LIBEVENT_VERSION}-stable.tar.gz"
 LIBEVENT_URL="https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable"
