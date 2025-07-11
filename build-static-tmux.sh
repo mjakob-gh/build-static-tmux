@@ -15,7 +15,7 @@ COLOR_END="\033[0m"
 PGM="${0##*/}" # Program basename
 
 # Scriptversion
-VERSION=3.5
+VERSION=3.5c
 
 # How many lines of the error log should be displayed
 LOG_LINES=50
@@ -215,8 +215,11 @@ rm -rf ${TMUX_STATIC_HOME:?}/src/tmux-${TMUX_VERSION}
 echo ""
 echo "current settings"
 echo "----------------"
+echo "OS:                ${OS}"
+echo "ARCH:              ${ARCH}"
 echo "USE_UPX:           ${USE_UPX}"
 echo "DUMP_LOG_ON_ERROR: ${DUMP_LOG_ON_ERROR}"
+echo "LOG_LINES:         ${LOG_LINES}"
 echo "LOG_LINES:         ${LOG_LINES}"
 
 echo ""
