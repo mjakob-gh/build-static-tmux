@@ -15,7 +15,7 @@ COLOR_END="\033[0m"
 PGM="${0##*/}" # Program basename
 
 # Scriptversion
-VERSION=3.5c
+VERSION=3.5d
 
 # How many lines of the error log should be displayed
 LOG_LINES=50
@@ -115,6 +115,7 @@ usage_options()
     printf "\t%b\t%s\n" "${BLUE}-h${COLOR_END}" "print this help message."
     echo ""
 }
+
 #
 # print the usage message
 #
@@ -180,6 +181,21 @@ checkResult ()
     fi
 }
 
+#
+# Check if the needed tools are installed
+# gcc, yacc
+#
+programExists ()
+{
+    LOG_FILE="dependencies.log"
+    if command -v "$1" > /dev/null 2>&1; then
+        return 0
+    else
+        echo "$1 is not available, please install and try again!" >> ${LOG_DIR}/${LOG_FILE} 2>&1
+        return 1
+    fi
+}
+
 # export this variables with value 1 in the shell,
 # or use the -c and/or -d argument
 # compress the resulting executable with UPX
@@ -215,12 +231,19 @@ rm -rf ${TMUX_STATIC_HOME:?}/src/tmux-${TMUX_VERSION}
 echo ""
 echo "current settings"
 echo "----------------"
-echo "OS:                ${OS}"
-echo "ARCH:              ${ARCH}"
 echo "USE_UPX:           ${USE_UPX}"
 echo "DUMP_LOG_ON_ERROR: ${DUMP_LOG_ON_ERROR}"
 echo "LOG_LINES:         ${LOG_LINES}"
-echo "LOG_LINES:         ${LOG_LINES}"
+
+echo ""
+echo "Dependencies"
+echo "------------"
+printf "gcc..........."
+programExists "gcc"
+checkResult $?
+printf "yacc.........."
+programExists "yacc"
+checkResult $?
 
 echo ""
 printf "%b\n" "${BLUE}*********************************************${COLOR_END}"
