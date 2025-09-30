@@ -1,36 +1,56 @@
-# This is a basic workflow to help you get started with Actions
-name: Build artifact
+name: Build and release artifacts
 
-# Controls when the action will run. 
 on:
   release:
     types: [published]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
-    runs-on: [ubuntu-22.04]
     strategy:
       matrix:
-        architecture: [amd64, arm64]
-    # Steps represent a sequence of tasks that will be executed as part of the job
+        include:
+        - architecture: amd64
+          runs-on: ubuntu-22.04
+        - architecture: arm64
+          runs-on: ubuntu-22.04-arm
+
+    runs-on: ${{ matrix.runs-on }}
+
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Do the build step
-      - name: run the buildscript
+      - name: Run the buildscript
         run: /bin/sh build-static-tmux.sh
-      # Do the upload step
-      - name: Upload artifacts
+        env:
+          ARCH: ${{ matrix.architecture }}
+
+      - name: Upload artifact for this architecture
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmux-${{ matrix.architecture }}
+          path: "/tmp/tmux-static/bin/tmux.*.gz"
+          retention-days: 1
+
+  release:
+    runs-on: ubuntu-22.04
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: List downloaded files
+        run: find ./artifacts -type f
+
+      - name: Upload to release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "/tmp/tmux-static/bin/tmux.*.gz"
+          artifacts: "./artifacts/**/*.gz"
           replacesArtifacts: true
           allowUpdates: true
           bodyFile: "README.md"
