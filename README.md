@@ -3,7 +3,7 @@
 A script or building a static tmux for linux which should run on a wide selection of distributions (tested on Ubuntu, SLES12)
 
 **Versions**
-* [tmux 3.6](https://github.com/tmux/tmux/)
+* [tmux 3.6a](https://github.com/tmux/tmux/)
 * [musl 1.2.5](https://musl.libc.org/)
 * [ncurses 6.5](https://invisible-island.net/ncurses/)
 * [libevent 2.1.12](https://github.com/libevent/libevent/)
