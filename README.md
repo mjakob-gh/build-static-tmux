@@ -1,12 +1,12 @@
 # build-static-tmux
 
-A script or building a static tmux for linux which should run on a wide selection of distributions (tested on Ubuntu, SLES12)
+A script or building a static tmux for linux which should run on a wide selection of distributions (tested on Ubuntu, SLES12, SLES15)
 
 **Versions**
-* [tmux 3.6b](https://github.com/tmux/tmux/)
+* [tmux 3.7b](https://github.com/tmux/tmux/)
 * [musl 1.2.6](https://musl.libc.org/)
 * [ncurses 6.6](https://invisible-island.net/ncurses/)
-* [libevent 2.1.12](https://github.com/libevent/libevent/)
+* [libevent 2.1.13](https://github.com/libevent/libevent/)
 
 Binaries available in releases.
 Build with GitHub actions (Ubuntu 22.04, amd64, arm64)
