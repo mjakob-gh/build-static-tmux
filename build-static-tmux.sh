@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 set -eu
 set -o pipefail 2>/dev/null || true
@@ -17,7 +17,7 @@ COLOR_END="\033[0m"
 PGM="${0##*/}"
 
 # Script version
-VERSION=3.6b
+VERSION=3.7b
 
 # How many lines of the error log should be displayed
 LOG_LINES=50
@@ -91,7 +91,7 @@ usage() {
     exec >&2
     echo ""
     echo "NAME"
-    printf "\t%b - %s\n" "${BLUE}${PGM}${COLOR_END}" "build a static TMUX release"
+    printf "\t%b - %s\n" "${BLUE}${PGM}${COLOR_END}" "build a static TMUX binary"
     echo ""
     echo "SYNOPSIS"
     printf "\t%b" "${BLUE}${PGM} [-h | -c -d]${COLOR_END}\n"
@@ -135,9 +135,9 @@ check_result() {
             fi
             echo ""
             echo "-------------"
-            printf "%b\n" "${RED}build aborted${COLOR_END}"
-            echo ""
         fi
+        printf "%b\n" "${RED}build aborted${COLOR_END}"
+        echo ""
         exit "$1"
     fi
 }
@@ -156,12 +156,12 @@ download_archive() {
     log_file="$3"
 
     if [ ! -f "${archive_path}" ]; then
-        printf "Downloading %s..." "${archive_path}"
+        
         if ! wget --no-verbose "${archive_url}" -O "${archive_path}" > "${LOG_DIR}/${log_file}" 2>&1; then
-            printf "\n"
-            check_result 1
+            return 1
         fi
     fi
+    return 0
 }
 
 ensure_directories() {
@@ -184,7 +184,11 @@ cleanup() {
 build_musl() {
     LOG_FILE="musl-${MUSL_VERSION}.log"
     cd "${TMUX_STATIC_HOME}/src" || exit 1
+    
+    printf "Downloading..."
     download_archive "${MUSL_URL}/${MUSL_ARCHIVE}" "${MUSL_ARCHIVE}" "${LOG_FILE}"
+    check_result $?
+
     printf "Extracting...."
     tar xf "${MUSL_ARCHIVE}" >> "${LOG_DIR}/${LOG_FILE}" 2>&1
     check_result $?
@@ -214,7 +218,11 @@ build_musl() {
 build_libevent() {
     LOG_FILE="libevent-${LIBEVENT_VERSION}-stable.log"
     cd "${TMUX_STATIC_HOME}/src" || exit 1
+
+    printf "Downloading..."
     download_archive "${LIBEVENT_URL}/${LIBEVENT_ARCHIVE}" "${LIBEVENT_ARCHIVE}" "${LOG_FILE}"
+    check_result $?
+
     printf "Extracting...."
     tar xf "${LIBEVENT_ARCHIVE}" >> "${LOG_DIR}/${LOG_FILE}" 2>&1
     check_result $?
@@ -243,7 +251,11 @@ build_libevent() {
 build_ncurses() {
     LOG_FILE="ncurses-${NCURSES_VERSION}.log"
     cd "${TMUX_STATIC_HOME}/src" || exit 1
+
+    printf "Downloading..."
     download_archive "${NCURSES_URL}/${NCURSES_ARCHIVE}" "${NCURSES_ARCHIVE}" "${LOG_FILE}"
+    check_result $?
+
     printf "Extracting...."
     tar xf "${NCURSES_ARCHIVE}" >> "${LOG_DIR}/${LOG_FILE}" 2>&1
     check_result $?
@@ -283,7 +295,10 @@ build_ncurses() {
 build_tmux() {
     LOG_FILE="tmux-${TMUX_VERSION}.log"
     cd "${TMUX_STATIC_HOME}/src" || exit 1
+
+    printf "Downloading..."
     download_archive "${TMUX_URL}/${TMUX_ARCHIVE}" "${TMUX_ARCHIVE}" "${LOG_FILE}"
+    check_result $?
     printf "Extracting...."
     tar xf "${TMUX_ARCHIVE}" >> "${LOG_DIR}/${LOG_FILE}" 2>&1
     check_result $?
@@ -386,25 +401,25 @@ else
     check_result 1
 fi
 
-printf "\n%b\n" "${BLUE}*********************************************${COLOR_END}"
-printf "%b\n" "${BLUE}** Starting to build a static TMUX release **${COLOR_END}"
-printf "%b\n" "${BLUE}*********************************************${COLOR_END}"
+printf "\n%b\n" "${BLUE}********************************************${COLOR_END}"
+printf "%b\n"   "${BLUE}** Starting to build a static TMUX binary **${COLOR_END}"
+printf "%b\n"   "${BLUE}********************************************${COLOR_END}"
 
 TIME_START=$(date +%s)
 
-printf "\n%s %s\n" "musl" "${MUSL_VERSION}"
+printf "\n%s\n" "${MUSL_ARCHIVE}"
 echo "------------------"
 build_musl
 
-printf "\n%s %s-stable\n" "libevent" "${LIBEVENT_VERSION}"
+printf "\n%s\n" "${LIBEVENT_ARCHIVE}"
 echo "------------------"
 build_libevent
 
-printf "\n%s %s\n" "ncurses" "${NCURSES_VERSION}"
+printf "\n%s\n" "${NCURSES_ARCHIVE}"
 echo "------------------"
 build_ncurses
 
-printf "\n%s %s\n" "tmux" "${TMUX_VERSION}"
+printf "\n%s\n" "${TMUX_ARCHIVE}"
 echo "------------------"
 build_tmux
 
@@ -419,6 +434,12 @@ if [ "${USE_UPX}" = "1" ]; then
     compress_with_upx
 fi
 
+gzip -k -f "${TMUX_STATIC_HOME}/bin/${TMUX_BIN}"
+gzip -k -f "${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.stripped"
+if [ "${USE_UPX}" = "1" ]; then
+    gzip -k -f "${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.upx"
+fi
+
 echo ""
 echo "Resulting files:"
 echo "----------------"
@@ -426,12 +447,6 @@ echo "Standard tmux binary:   ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.gz"
 echo "Stripped tmux binary:   ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.stripped.gz"
 if [ "${USE_UPX}" = "1" ]; then
     echo "Compressed tmux binary: ${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.upx.gz"
-fi
-
-gzip -f "${TMUX_STATIC_HOME}/bin/${TMUX_BIN}"
-gzip -f "${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.stripped"
-if [ "${USE_UPX}" = "1" ]; then
-    gzip -f "${TMUX_STATIC_HOME}/bin/${TMUX_BIN}.upx"
 fi
 
 echo ""

@@ -1,0 +1,47 @@
+name: Build and Release Static TMUX
+
+on:
+  push:
+    tags:
+      - 'v*' # Triggers the workflow on any tag starting with 'v'
+
+jobs:
+  build-and-release:
+    strategy:
+      matrix:
+        # explicitly use 22.04 for x64 and ARM64 to ensure older Glibc/Kernel compatibility
+        os-runner: [ubuntu-22.04, ubuntu-22.04-arm64]
+    
+    runs-on: ${{ matrix.os-runner }}
+    
+    permissions:
+      contents: write # Required to create releases and upload assets
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential wget tar gzip bison flex
+
+      - name: Run Build Script
+        env:
+          USE_UPX: 1           # Enable UPX compression
+          DUMP_LOG_ON_ERROR: 1 # Dump logs to stdout if a build step fails
+        run: |
+          chmod +x ./build_tmux.sh
+          ./build_tmux.sh
+
+      - name: Create GitHub Release and Upload Artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          # Automatically collects and uploads all generated .gz files for this architecture
+          files: |
+            /tmp/tmux-static/bin/*.gz
+          name: TMUX Static Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
