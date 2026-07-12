@@ -37,9 +37,9 @@ jobs:
       - name: Create GitHub Release and Upload Artifacts
         uses: softprops/action-gh-release@v2
         with:
-          # Automatically collects and uploads all generated .gz files for this architecture
+          # Automatically collects and uploads all generated files for this architecture
           files: |
-            /tmp/tmux-static/bin/*.gz
+            /tmp/tmux-static/bin/*
           name: TMUX Static Release ${{ github.ref_name }}
           draft: false
           prerelease: false
