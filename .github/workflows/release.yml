@@ -31,8 +31,8 @@ jobs:
           USE_UPX: 1           # Enable UPX compression
           DUMP_LOG_ON_ERROR: 1 # Dump logs to stdout if a build step fails
         run: |
-          chmod +x ./build_tmux.sh
-          ./build_tmux.sh
+          chmod +x ./build-static-tmux.sh
+          ./build-static-tmux.sh
 
       - name: Create GitHub Release and Upload Artifacts
         uses: softprops/action-gh-release@v2
