@@ -39,7 +39,7 @@ jobs:
         with:
           # Automatically collects and uploads all generated files for this architecture
           files: |
-            /tmp/tmux-static/bin/*
+            /tmp/tmux-static/bin/*.gz
           name: TMUX Static Release ${{ github.ref_name }}
           draft: false
           prerelease: false
